@@ -184,7 +184,7 @@ export default function UsersClient({ users, branches }: Props) {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              {['이름', '이메일', '역할', '고용형태', '포지션', '지점', '입사일', '상태', ''].map((h) => (
+              {['이름', '연락처', '이메일', '고용형태', '포지션', '지점', '입사일', '상태', ''].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-700">
                   {h}
                 </th>
@@ -198,8 +198,8 @@ export default function UsersClient({ users, branches }: Props) {
                   {user.name}
                   {user.jobTitle && <span className="ml-1 text-xs text-gray-700">({user.jobTitle})</span>}
                 </td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.phone ?? '-'}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.email}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{roleLabels[user.role]}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{employmentLabels[user.employmentType]}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{positionLabels[user.positionType]}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.branchName ?? '-'}</td>
