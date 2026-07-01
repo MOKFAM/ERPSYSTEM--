@@ -209,7 +209,7 @@ export async function getPayrollList(yearMonth: string): Promise<Payroll[]> {
 
   const { data, error } = await supabase
     .from('payroll')
-    .select('*, users(name, employment_type), confirmer:confirmed_by(name)')
+    .select('*, users!payroll_user_id_fkey(name, employment_type), confirmer:users!payroll_confirmed_by_fkey(name)')
     .eq('year_month', yearMonth)
     .order('total_pay', { ascending: false })
 
@@ -223,7 +223,7 @@ export async function getMyPayroll(yearMonth: string): Promise<Payroll | null> {
 
   const { data, error } = await supabase
     .from('payroll')
-    .select('*, users(name, employment_type), confirmer:confirmed_by(name)')
+    .select('*, users!payroll_user_id_fkey(name, employment_type), confirmer:users!payroll_confirmed_by_fkey(name)')
     .eq('user_id', session.user.id)
     .eq('year_month', yearMonth)
     .single()
@@ -238,7 +238,7 @@ export async function getMyPayrollHistory(): Promise<Payroll[]> {
 
   const { data, error } = await supabase
     .from('payroll')
-    .select('*, users(name, employment_type)')
+    .select('*, users!payroll_user_id_fkey(name, employment_type)')
     .eq('user_id', session.user.id)
     .eq('status', 'confirmed')
     .order('year_month', { ascending: false })

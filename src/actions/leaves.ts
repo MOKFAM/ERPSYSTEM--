@@ -66,7 +66,7 @@ export async function getAllLeaves(status?: string): Promise<Leave[]> {
 
   let query = supabase
     .from('leaves')
-    .select('*, users(name), reviewer:reviewed_by(name)')
+    .select('*, users!leaves_user_id_fkey(name), reviewer:users!leaves_reviewed_by_fkey(name)')
     .order('created_at', { ascending: false })
 
   if (status) {
@@ -199,7 +199,7 @@ export async function getApprovedLeavesForMonth(yearMonth: string): Promise<Leav
 
   const { data, error } = await supabase
     .from('leaves')
-    .select('*, users(name)')
+    .select('*, users!leaves_user_id_fkey(name)')
     .eq('status', 'approved')
     .lte('start_date', endDate)
     .gte('end_date', startDate)

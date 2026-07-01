@@ -33,6 +33,9 @@ export async function getAuditLogs(filter: AuditFilter = {}): Promise<AuditLog[]
   if (filter.action) query = query.eq('action', filter.action)
 
   const { data, error } = await query
-  if (error) throw new Error(error.message)
+  if (error) {
+    if (error.message.includes('schema cache')) return []
+    throw new Error(error.message)
+  }
   return (data ?? []).map(toAuditLog)
 }

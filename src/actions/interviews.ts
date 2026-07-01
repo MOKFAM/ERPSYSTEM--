@@ -28,7 +28,11 @@ export async function getInterviews(userId?: string): Promise<Interview[]> {
   if (userId) query = query.eq('user_id', userId)
 
   const { data, error } = await query
-  if (error) throw new Error(error.message)
+  if (error) {
+    // 테이블이 아직 생성되지 않은 경우 빈 배열 반환
+    if (error.message.includes('schema cache')) return []
+    throw new Error(error.message)
+  }
 
   // 민감 정보 열람 로그 기록
   await recordAudit({
