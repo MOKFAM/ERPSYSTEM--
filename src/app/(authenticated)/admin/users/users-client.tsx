@@ -240,7 +240,7 @@ function UserGroup({
   onEdit: (u: User) => void
   onDelete: (id: string, name: string) => void
 }) {
-  const headers = ['이름', '직급', '연락처', '이메일', '포지션', '입사일', '상태', '']
+  const headers = ['직급', '이름', '포지션', '입사일', '상태', '연락처', '']
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
       <div className="border-b border-gray-200 bg-slate-800 px-4 py-3 rounded-t-xl">
@@ -259,10 +259,7 @@ function UserGroup({
         <tbody className="divide-y divide-gray-200">
           {users.map((user) => (
             <tr key={user.id} className={!user.isActive ? 'bg-gray-50 opacity-60' : 'hover:bg-gray-50'}>
-              <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
-                {user.name}
-              </td>
-              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+              <td className="whitespace-nowrap px-4 py-3 text-sm">
                 {user.jobTitle ? (
                   <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
                     user.jobTitle === '점장' ? 'bg-blue-100 text-blue-800' :
@@ -276,8 +273,9 @@ function UserGroup({
                   </span>
                 ) : '-'}
               </td>
-              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.phone ?? '-'}</td>
-              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.email}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                {user.name}
+              </td>
               <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{positionLabels[user.positionType]}</td>
               <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{user.hireDate ?? '-'}</td>
               <td className="whitespace-nowrap px-4 py-3 text-sm">
@@ -287,11 +285,28 @@ function UserGroup({
                   {user.isActive ? '재직' : '퇴직'}
                 </span>
               </td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.phone ?? '-'}</td>
               <td className="whitespace-nowrap px-4 py-3 text-sm">
-                <div className="flex gap-2">
-                  <button onClick={() => onEdit(user)} className="text-blue-600 hover:text-blue-800">수정</button>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => onEdit(user)}
+                    title="수정"
+                    className="rounded-lg border border-gray-300 p-1.5 text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
                   {user.isActive && (
-                    <button onClick={() => onDelete(user.id, user.name)} className="text-red-600 hover:text-red-800">비활성화</button>
+                    <button
+                      onClick={() => onDelete(user.id, user.name)}
+                      title="비활성화"
+                      className="rounded-lg border border-gray-300 p-1.5 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                      </svg>
+                    </button>
                   )}
                 </div>
               </td>
