@@ -506,8 +506,8 @@ function ScheduleModal({
 }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [shiftStart, setShiftStart] = useState(modal.schedule?.shiftStart?.slice(0, 5) ?? '11:00')
-  const [shiftEnd, setShiftEnd] = useState(modal.schedule?.shiftEnd?.slice(0, 5) ?? '22:00')
+  const [shiftStart, setShiftStart] = useState(modal.schedule?.shiftStart?.slice(0, 5) ?? '09:00')
+  const [shiftEnd, setShiftEnd] = useState(modal.schedule?.shiftEnd?.slice(0, 5) ?? '21:00')
   const [position, setPosition] = useState(modal.schedule?.position ?? 'hall')
   const [note, setNote] = useState(modal.schedule?.note ?? '')
 
@@ -567,9 +567,9 @@ function ScheduleModal({
   const dateLabel = `${dateObj.getMonth() + 1}/${dateObj.getDate()} (${dayLabels[dateObj.getDay()]})`
 
   function applyPreset(preset: 'morning' | 'afternoon' | 'full') {
-    if (preset === 'morning') { setShiftStart('11:00'); setShiftEnd('15:00') }
-    else if (preset === 'afternoon') { setShiftStart('17:00'); setShiftEnd('22:00') }
-    else { setShiftStart('11:00'); setShiftEnd('22:00') }
+    if (preset === 'morning') { setShiftStart('09:00'); setShiftEnd('16:00') }
+    else if (preset === 'afternoon') { setShiftStart('17:00'); setShiftEnd('21:00') }
+    else { setShiftStart('09:00'); setShiftEnd('21:00') }
   }
 
   async function handleSubmit() {
@@ -606,9 +606,9 @@ function ScheduleModal({
         {error && <div className="mb-3 rounded-lg bg-red-50 p-2 text-sm text-red-700">{error}</div>}
 
         <div className="mb-4 flex gap-2">
-          <button type="button" onClick={() => applyPreset('morning')} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50">오전 (11~15)</button>
-          <button type="button" onClick={() => applyPreset('afternoon')} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50">오후 (17~22)</button>
-          <button type="button" onClick={() => applyPreset('full')} className="flex-1 rounded-lg border border-slate-400 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100">종일 (11~22)</button>
+          <button type="button" onClick={() => applyPreset('morning')} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50">오전 (9~16)</button>
+          <button type="button" onClick={() => applyPreset('afternoon')} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50">오후 (17~21)</button>
+          <button type="button" onClick={() => applyPreset('full')} className="flex-1 rounded-lg border border-slate-400 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100">종일 (9~21)</button>
         </div>
 
         <div className="mb-4 grid grid-cols-2 gap-3">
