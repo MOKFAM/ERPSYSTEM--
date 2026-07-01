@@ -458,27 +458,27 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
                 <td colSpan={weekDates.length + 1} className="bg-slate-800" />
               </tr>
               <tr className="bg-slate-50">
-                <td className="sticky left-0 z-10 bg-slate-50 border-r border-slate-200 px-3 py-2 text-xs font-bold text-gray-900">직원</td>
+                <td className="sticky left-0 z-10 bg-slate-50 border-r border-slate-200 px-3 py-2.5 text-xs font-bold text-gray-900">직원</td>
                 {weekDates.map((date) => (
-                  <td key={date} className="border-r border-slate-200 px-2 py-2 text-center text-sm font-bold text-gray-900">
+                  <td key={date} className="border-r border-slate-200 px-2 py-2.5 text-center text-lg font-extrabold text-gray-900" style={{ fontVariantNumeric: 'tabular-nums', fontStretch: 'expanded' }}>
                     {getDayCounts(date).fullTime}
                   </td>
                 ))}
                 <td />
               </tr>
               <tr className="bg-orange-50 border-t border-orange-200">
-                <td className="sticky left-0 z-10 bg-orange-50 border-r border-orange-200 px-3 py-2 text-xs font-bold text-orange-800">알바(PT)</td>
+                <td className="sticky left-0 z-10 bg-orange-50 border-r border-orange-200 px-3 py-2.5 text-xs font-bold text-orange-800">알바(PT)</td>
                 {weekDates.map((date) => (
-                  <td key={date} className="border-r border-orange-200 px-2 py-2 text-center text-sm font-bold text-orange-800">
+                  <td key={date} className="border-r border-orange-200 px-2 py-2.5 text-center text-lg font-extrabold text-orange-800" style={{ fontVariantNumeric: 'tabular-nums', fontStretch: 'expanded' }}>
                     {getDayCounts(date).partTime}
                   </td>
                 ))}
                 <td />
               </tr>
               <tr className="bg-slate-700 border-t border-slate-500">
-                <td className="sticky left-0 z-10 bg-slate-700 border-r border-slate-500 px-3 py-2 text-xs font-bold text-white">총인원</td>
+                <td className="sticky left-0 z-10 bg-slate-700 border-r border-slate-500 px-3 py-2.5 text-xs font-bold text-white">총인원</td>
                 {weekDates.map((date) => (
-                  <td key={date} className="border-r border-slate-500 px-2 py-2 text-center text-sm font-bold text-white">
+                  <td key={date} className="border-r border-slate-500 px-2 py-2.5 text-center text-xl font-black text-white" style={{ fontVariantNumeric: 'tabular-nums', fontStretch: 'expanded' }}>
                     {getDayCounts(date).total}
                   </td>
                 ))}
