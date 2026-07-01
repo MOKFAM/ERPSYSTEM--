@@ -447,36 +447,36 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
               ))}
 
               {/* 집계 */}
-              <tr className="border-t-2 border-gray-300">
-                <td className="sticky left-0 z-10 bg-slate-100 px-3 py-1 text-xs font-bold text-gray-900">인원 집계</td>
-                <td colSpan={weekDates.length + 1} className="bg-slate-100" />
+              <tr className="border-t-2 border-slate-400">
+                <td className="sticky left-0 z-10 bg-slate-800 px-3 py-2 text-xs font-bold text-white rounded-bl-none">인원 집계</td>
+                <td colSpan={weekDates.length + 1} className="bg-slate-800" />
               </tr>
               <tr className="bg-slate-50">
-                <td className="sticky left-0 z-10 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-gray-900">직원</td>
+                <td className="sticky left-0 z-10 bg-slate-50 border-r border-slate-200 px-3 py-2 text-xs font-bold text-gray-900">직원</td>
                 {weekDates.map((date) => (
-                  <td key={date} className="border-r border-gray-200 px-2 py-1.5 text-center text-sm font-bold text-gray-900">
+                  <td key={date} className="border-r border-slate-200 px-2 py-2 text-center text-sm font-bold text-gray-900">
                     {getDayCounts(date).fullTime}
                   </td>
                 ))}
                 <td />
               </tr>
-              <tr className="bg-slate-50">
-                <td className="sticky left-0 z-10 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-900">총인원</td>
+              <tr className="bg-orange-50 border-t border-orange-200">
+                <td className="sticky left-0 z-10 bg-orange-50 border-r border-orange-200 px-3 py-2 text-xs font-bold text-orange-800">알바(PT)</td>
                 {weekDates.map((date) => (
-                  <td key={date} className="border-r border-gray-200 px-2 py-1.5 text-center text-sm font-bold text-slate-900">
-                    {getDayCounts(date).total}
-                  </td>
-                ))}
-                <td />
-              </tr>
-              <tr className="bg-orange-50">
-                <td className="sticky left-0 z-10 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-900">알바(PT)</td>
-                {weekDates.map((date) => (
-                  <td key={date} className="border-r border-gray-200 px-2 py-1.5 text-center text-sm font-bold text-orange-900">
+                  <td key={date} className="border-r border-orange-200 px-2 py-2 text-center text-sm font-bold text-orange-800">
                     {getDayCounts(date).partTime}
                   </td>
                 ))}
                 <td />
+              </tr>
+              <tr className="bg-slate-700 border-t border-slate-500">
+                <td className="sticky left-0 z-10 bg-slate-700 border-r border-slate-500 px-3 py-2 text-xs font-bold text-white">총인원</td>
+                {weekDates.map((date) => (
+                  <td key={date} className="border-r border-slate-500 px-2 py-2 text-center text-sm font-bold text-white">
+                    {getDayCounts(date).total}
+                  </td>
+                ))}
+                <td className="bg-slate-700" />
               </tr>
             </tbody>
           </table>
