@@ -50,6 +50,8 @@ export interface Schedule {
   id: string
   userId: string
   userName?: string
+  userEmploymentType?: EmploymentType
+  userPositionType?: PositionType
   branchId: string | null
   date: string
   shiftStart: string
@@ -60,10 +62,13 @@ export interface Schedule {
 }
 
 export function toSchedule(row: Record<string, unknown>): Schedule {
+  const users = row.users as Record<string, unknown> | null
   return {
     id: row.id as string,
     userId: row.user_id as string,
-    userName: (row.users as Record<string, unknown>)?.name as string ?? undefined,
+    userName: users?.name as string ?? undefined,
+    userEmploymentType: users?.employment_type as EmploymentType ?? undefined,
+    userPositionType: users?.position_type as PositionType ?? undefined,
     branchId: row.branch_id as string | null,
     date: row.date as string,
     shiftStart: row.shift_start as string,

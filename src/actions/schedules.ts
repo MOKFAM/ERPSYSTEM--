@@ -25,7 +25,7 @@ export async function getWeekSchedules(startDate: string, endDate: string): Prom
 
   const { data, error } = await supabase
     .from('schedules')
-    .select('*, users(name)')
+    .select('*, users(name, employment_type, position_type)')
     .gte('date', startDate)
     .lte('date', endDate)
     .order('date')
@@ -44,7 +44,7 @@ export async function getMySchedules(yearMonth: string): Promise<Schedule[]> {
 
   const { data, error } = await supabase
     .from('schedules')
-    .select('*, users(name)')
+    .select('*, users(name, employment_type, position_type)')
     .eq('user_id', session.user.id)
     .gte('date', startDate)
     .lt('date', endDate)
