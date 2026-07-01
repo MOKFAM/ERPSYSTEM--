@@ -425,16 +425,22 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
                         } ${isToday(date) ? 'ring-2 ring-inset ring-slate-300' : ''}`}
                       >
                         {schedule ? (
-                          <div className="text-xs">
-                            <div className="font-semibold text-gray-900">
+                          <div className={`rounded-md px-1.5 py-1 text-xs ${
+                            schedule.position === 'hall'
+                              ? 'bg-teal-600 text-white'
+                              : schedule.position === 'kitchen'
+                                ? 'bg-slate-700 text-white'
+                                : 'bg-amber-600 text-white'
+                          }`}>
+                            <div className="font-bold">
                               {timeShort(schedule.shiftStart)}~{timeShort(schedule.shiftEnd)}
                             </div>
-                            <div className={`${schedule.position === 'hall' ? 'text-blue-700' : 'text-purple-700'}`}>
+                            <div className="text-[10px] font-medium opacity-90">
                               {positionLabels[schedule.position]}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-700">-</span>
+                          <span className="text-xs text-gray-300">-</span>
                         )}
                       </td>
                     )
