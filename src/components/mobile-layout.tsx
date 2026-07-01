@@ -34,7 +34,7 @@ export default function MobileLayout({ role, userName, children }: Props) {
       </div>
 
       {/* 메인 콘텐츠: 데스크톱에서 사이드바 너비만큼 왼쪽 여백 */}
-      <div className="flex min-h-screen flex-col md:ml-56">
+      <div className="flex min-h-screen flex-col md:ml-60">
         <Header
           userName={userName}
           role={role}
