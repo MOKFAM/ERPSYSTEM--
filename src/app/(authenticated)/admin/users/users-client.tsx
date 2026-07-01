@@ -21,6 +21,25 @@ const positionLabels: Record<PositionType, string> = {
   both: '홀+주방',
 }
 
+// 직급 정렬 우선순위 (낮을수록 위)
+const jobTitleOrder: Record<string, number> = {
+  '점장': 0,
+  '본사소속': 1,
+  '실장': 2,
+  '부장': 3,
+  '사원': 4,
+  'PT': 5,
+}
+
+function getJobTitleRank(title?: string | null): number {
+  if (!title) return 99
+  return jobTitleOrder[title] ?? 90
+}
+
+function sortUsers(list: User[]): User[] {
+  return [...list].sort((a, b) => getJobTitleRank(a.jobTitle) - getJobTitleRank(b.jobTitle))
+}
+
 interface Props {
   users: User[]
   branches: Branch[]
@@ -31,7 +50,7 @@ export default function UsersClient({ users, branches }: Props) {
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
-  const [roleFilter, setRoleFilter] = useState('')
+  const [typeFilter, setTypeFilter] = useState('')
 
   const q = query.trim().toLowerCase()
   const filteredUsers = users.filter((u) => {
@@ -39,9 +58,12 @@ export default function UsersClient({ users, branches }: Props) {
       u.name.toLowerCase().includes(q) ||
       u.email.toLowerCase().includes(q) ||
       (u.jobTitle ?? '').toLowerCase().includes(q)
-    const matchRole = !roleFilter || u.role === roleFilter
-    return matchQuery && matchRole
+    const matchType = !typeFilter || u.employmentType === typeFilter
+    return matchQuery && matchType
   })
+
+  const fullTimeUsers = sortUsers(filteredUsers.filter(u => u.employmentType === 'full_time'))
+  const partTimeUsers = sortUsers(filteredUsers.filter(u => u.employmentType === 'part_time'))
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -93,14 +115,13 @@ export default function UsersClient({ users, branches }: Props) {
           className="w-56 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
         />
         <select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
         >
-          <option value="">전체 역할</option>
-          <option value="admin">관리자</option>
-          <option value="manager">중간관리자</option>
-          <option value="user">사용자</option>
+          <option value="">전체</option>
+          <option value="full_time">정직원</option>
+          <option value="part_time">PT (아르바이트)</option>
         </select>
         <p className="text-sm text-gray-700">{filteredUsers.length}명</p>
         <button
@@ -180,67 +201,104 @@ export default function UsersClient({ users, branches }: Props) {
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {['이름', '연락처', '이메일', '고용형태', '포지션', '지점', '입사일', '상태', ''].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-700">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredUsers.map((user) => (
-              <tr key={user.id} className={!user.isActive ? 'opacity-50' : ''}>
-                <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
-                  {user.name}
-                  {user.jobTitle && <span className="ml-1 text-xs text-gray-700">({user.jobTitle})</span>}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.phone ?? '-'}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.email}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{employmentLabels[user.employmentType]}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{positionLabels[user.positionType]}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.branchName ?? '-'}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{user.hireDate ?? '-'}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    user.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                  }`}>
-                    {user.isActive ? '재직' : '퇴직'}
-                  </span>
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openEdit(user)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      수정
-                    </button>
-                    {user.isActive && (
-                      <button
-                        onClick={() => handleDelete(user.id, user.name)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        비활성화
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {filteredUsers.length === 0 && (
-              <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-sm text-gray-700">
-                  {users.length === 0 ? '등록된 직원이 없습니다.' : '검색 결과가 없습니다.'}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      {filteredUsers.length === 0 ? (
+        <div className="rounded-xl border border-gray-200 bg-white px-4 py-8 text-center text-sm text-gray-700">
+          {users.length === 0 ? '등록된 직원이 없습니다.' : '검색 결과가 없습니다.'}
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {fullTimeUsers.length > 0 && (
+            <UserGroup
+              title={`정직원 (${fullTimeUsers.length}명)`}
+              users={fullTimeUsers}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
+          )}
+          {partTimeUsers.length > 0 && (
+            <UserGroup
+              title={`PT / 아르바이트 (${partTimeUsers.length}명)`}
+              users={partTimeUsers}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function UserGroup({
+  title,
+  users,
+  onEdit,
+  onDelete,
+}: {
+  title: string
+  users: User[]
+  onEdit: (u: User) => void
+  onDelete: (id: string, name: string) => void
+}) {
+  const headers = ['이름', '직급', '연락처', '이메일', '포지션', '입사일', '상태', '']
+  return (
+    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+      <div className="border-b border-gray-200 bg-slate-800 px-4 py-3 rounded-t-xl">
+        <h3 className="text-sm font-bold text-white">{title}</h3>
       </div>
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            {headers.map((h) => (
+              <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-700">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {users.map((user) => (
+            <tr key={user.id} className={!user.isActive ? 'bg-gray-50 opacity-60' : 'hover:bg-gray-50'}>
+              <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                {user.name}
+              </td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+                {user.jobTitle ? (
+                  <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
+                    user.jobTitle === '점장' ? 'bg-blue-100 text-blue-800' :
+                    user.jobTitle === '본사소속' ? 'bg-purple-100 text-purple-800' :
+                    user.jobTitle === '실장' ? 'bg-emerald-100 text-emerald-800' :
+                    user.jobTitle === '부장' ? 'bg-amber-100 text-amber-800' :
+                    user.jobTitle === 'PT' ? 'bg-orange-100 text-orange-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {user.jobTitle}
+                  </span>
+                ) : '-'}
+              </td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.phone ?? '-'}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.email}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{positionLabels[user.positionType]}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{user.hireDate ?? '-'}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm">
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                  user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  {user.isActive ? '재직' : '퇴직'}
+                </span>
+              </td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm">
+                <div className="flex gap-2">
+                  <button onClick={() => onEdit(user)} className="text-blue-600 hover:text-blue-800">수정</button>
+                  {user.isActive && (
+                    <button onClick={() => onDelete(user.id, user.name)} className="text-red-600 hover:text-red-800">비활성화</button>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
