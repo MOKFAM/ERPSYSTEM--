@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900">대시보드</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-700">
           안녕하세요, {session.user.name}님. ({roleLabels[role]})
         </p>
       </div>
@@ -35,8 +35,8 @@ export default async function DashboardPage() {
       {role === 'admin' && (
         <div className="rounded-xl border border-gray-200 bg-white p-6">
           <h3 className="text-lg font-semibold text-gray-900">관리자 메뉴</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            좌측 사이드바에서 직원 관리, 지점 관리 메뉴를 이용하세요.
+          <p className="mt-1 text-sm text-gray-700">
+            관리 메뉴를 이용하세요.
           </p>
         </div>
       )}
@@ -47,9 +47,9 @@ export default async function DashboardPage() {
 function DashboardCard({ title, value, sub }: { title: string; value: string; sub: string }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6">
-      <p className="text-sm font-medium text-gray-500">{title}</p>
+      <p className="text-sm font-medium text-gray-700">{title}</p>
       <p className="mt-2 text-xl font-semibold text-gray-900">{value}</p>
-      <p className="mt-1 text-xs text-gray-400">{sub}</p>
+      <p className="mt-1 text-xs text-gray-700">{sub}</p>
     </div>
   )
 }
