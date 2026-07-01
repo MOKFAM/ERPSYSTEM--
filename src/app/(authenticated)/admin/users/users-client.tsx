@@ -249,7 +249,7 @@ function UserGroup({
   onEdit: (u: User) => void
   onDelete: (id: string, name: string) => void
 }) {
-  const headers = ['직급', '이름', '포지션', '입사일', '상태', '연락처', '']
+  const headers = ['직급', '이름', '포지션', '입사일', '상태', '연락처', '이메일', '']
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
       <div className="border-b border-gray-200 bg-slate-800 px-4 py-3 rounded-t-xl">
@@ -295,6 +295,7 @@ function UserGroup({
                 </span>
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.phone ?? '-'}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.email}</td>
               <td className="whitespace-nowrap px-4 py-3 text-sm">
                 <div className="flex gap-1">
                   <button
