@@ -196,13 +196,13 @@ export default function UsersClient({ users, branches }: Props) {
               <tr key={user.id} className={!user.isActive ? 'opacity-50' : ''}>
                 <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
                   {user.name}
-                  {user.jobTitle && <span className="ml-1 text-xs text-gray-600">({user.jobTitle})</span>}
+                  {user.jobTitle && <span className="ml-1 text-xs text-gray-700">({user.jobTitle})</span>}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{user.email}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.email}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{roleLabels[user.role]}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{employmentLabels[user.employmentType]}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{positionLabels[user.positionType]}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{user.branchName ?? '-'}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{user.branchName ?? '-'}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{user.hireDate ?? '-'}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${

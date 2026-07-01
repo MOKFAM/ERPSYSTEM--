@@ -67,7 +67,7 @@ export default function AuditClient() {
               {logs.map((log) => (
                 <Fragment key={log.id}>
                   <tr>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
                       {new Date(log.createdAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{log.actorName || '-'}</td>

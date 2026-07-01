@@ -72,7 +72,7 @@ export default function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={toggle}
-        className="relative rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        className="relative rounded-lg p-2 text-gray-700 hover:bg-gray-100 hover:text-gray-700"
         aria-label="알림"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
@@ -93,7 +93,7 @@ export default function NotificationBell() {
           </div>
           <div className="max-h-96 overflow-y-auto">
             {items.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-gray-500">알림이 없습니다.</p>
+              <p className="px-4 py-8 text-center text-sm text-gray-700">알림이 없습니다.</p>
             ) : (
               items.map((n) => {
                 const content = (
@@ -103,12 +103,12 @@ export default function NotificationBell() {
                         {NOTIFICATION_TYPE_LABELS[n.type]}
                       </span>
                       {!n.isRead && <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />}
-                      <span className="ml-auto text-[10px] text-gray-400">
+                      <span className="ml-auto text-[10px] text-gray-700">
                         {new Date(n.createdAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     <p className="mt-1 text-sm font-medium text-gray-900">{n.title}</p>
-                    {n.body && <p className="mt-0.5 text-xs text-gray-600 line-clamp-2">{n.body}</p>}
+                    {n.body && <p className="mt-0.5 text-xs text-gray-700 line-clamp-2">{n.body}</p>}
                   </div>
                 )
                 return n.link ? (

@@ -69,7 +69,7 @@ export default function AttendanceClient() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">로딩 중...</p>
+        <p className="text-sm text-gray-700">로딩 중...</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
           <table className="min-w-full divide-y divide-gray-200">
@@ -86,9 +86,9 @@ export default function AttendanceClient() {
               {records.map((r) => (
                 <tr key={r.id}>
                   <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{r.date}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{formatTime(r.clockIn)}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{formatTime(r.clockOut)}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{formatMinutes(r.workedMinutes)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{formatTime(r.clockIn)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{formatTime(r.clockOut)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{formatMinutes(r.workedMinutes)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[r.status]}`}>
                       {statusLabels[r.status]}
@@ -98,7 +98,7 @@ export default function AttendanceClient() {
               ))}
               {records.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">
+                  <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-700">
                     해당 월의 근태 기록이 없습니다.
                   </td>
                 </tr>

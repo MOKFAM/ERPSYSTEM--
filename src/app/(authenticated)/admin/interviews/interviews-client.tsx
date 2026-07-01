@@ -206,9 +206,9 @@ export default function InterviewsClient({ employees }: Props) {
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{r.title}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 max-w-md truncate">{r.content || '-'}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{r.interviewDate}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{r.interviewerName || '-'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 max-w-md truncate">{r.content || '-'}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{r.interviewDate}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{r.interviewerName || '-'}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     <div className="flex gap-2">
                       <button onClick={() => openEdit(r)} className="text-blue-700 hover:text-blue-800 text-xs font-medium">수정</button>

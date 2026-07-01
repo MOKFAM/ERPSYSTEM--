@@ -40,7 +40,7 @@ export default function MyScheduleClient() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">로딩 중...</p>
+        <p className="text-sm text-gray-700">로딩 중...</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
           <table className="min-w-full divide-y divide-gray-200">
@@ -62,8 +62,8 @@ export default function MyScheduleClient() {
                       {positionLabels[s.position]}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{s.shiftStart.slice(0, 5)}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{s.shiftEnd.slice(0, 5)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{s.shiftStart.slice(0, 5)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{s.shiftEnd.slice(0, 5)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       s.isConfirmed ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
@@ -71,12 +71,12 @@ export default function MyScheduleClient() {
                       {s.isConfirmed ? '확정' : '미확정'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{s.note ?? '-'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{s.note ?? '-'}</td>
                 </tr>
               ))}
               {schedules.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-500">해당 월의 스케줄이 없습니다.</td>
+                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-700">해당 월의 스케줄이 없습니다.</td>
                 </tr>
               )}
             </tbody>

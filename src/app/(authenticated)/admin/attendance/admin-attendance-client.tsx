@@ -165,10 +165,10 @@ export default function AdminAttendanceClient() {
                   <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
                     {r.userName ?? '-'}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{r.date}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{formatTime(r.clockIn)}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{formatTime(r.clockOut)}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{formatMinutes(r.workedMinutes)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{r.date}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{formatTime(r.clockIn)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{formatTime(r.clockOut)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{formatMinutes(r.workedMinutes)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[r.status]}`}>
                       {statusLabels[r.status]}

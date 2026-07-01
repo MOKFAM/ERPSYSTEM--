@@ -129,11 +129,11 @@ export default function AdminPurchaseOrdersClient() {
           <ol className="space-y-2">
             {steps.map((s) => (
               <li key={s.id} className="flex items-center gap-3 text-sm">
-                <span className="w-6 text-right text-gray-500">{s.stepNo}</span>
+                <span className="w-6 text-right text-gray-700">{s.stepNo}</span>
                 <span className="font-medium text-gray-900">{APPROVAL_ACTION_LABELS[s.action]}</span>
                 <span className="text-gray-700">{s.actorName || '-'}</span>
-                {s.comment && <span className="text-gray-500">— {s.comment}</span>}
-                <span className="ml-auto text-xs text-gray-400">
+                {s.comment && <span className="text-gray-700">— {s.comment}</span>}
+                <span className="ml-auto text-xs text-gray-700">
                   {new Date(s.createdAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}
                 </span>
               </li>

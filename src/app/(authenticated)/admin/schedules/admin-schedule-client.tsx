@@ -177,7 +177,7 @@ export default function AdminScheduleClient({ users }: Props) {
       )}
 
       {loading ? (
-        <p className="text-sm text-gray-500">로딩 중...</p>
+        <p className="text-sm text-gray-700">로딩 중...</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
           <table className="min-w-full divide-y divide-gray-200">
@@ -192,7 +192,7 @@ export default function AdminScheduleClient({ users }: Props) {
               {filteredSchedules.map((s) => (
                 <tr key={s.id}>
                   <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{s.userName ?? '-'}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{formatDate(s.date)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{formatDate(s.date)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       s.position === 'hall' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
@@ -200,8 +200,8 @@ export default function AdminScheduleClient({ users }: Props) {
                       {positionLabels[s.position]}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{s.shiftStart.slice(0, 5)}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{s.shiftEnd.slice(0, 5)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{s.shiftStart.slice(0, 5)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">{s.shiftEnd.slice(0, 5)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       s.isConfirmed ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
@@ -209,7 +209,7 @@ export default function AdminScheduleClient({ users }: Props) {
                       {s.isConfirmed ? '확정' : '미확정'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{s.note ?? '-'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{s.note ?? '-'}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm">
                     {!s.isConfirmed && (
                       <button onClick={() => handleDelete(s.id)} className="text-red-600 hover:text-red-800">삭제</button>
@@ -219,7 +219,7 @@ export default function AdminScheduleClient({ users }: Props) {
               ))}
               {filteredSchedules.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-500">이번 주 스케줄이 없습니다.</td>
+                  <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-700">이번 주 스케줄이 없습니다.</td>
                 </tr>
               )}
             </tbody>

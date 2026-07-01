@@ -81,8 +81,8 @@ export default function NotificationsClient() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-gray-900">{n.title}</p>
-              {n.body && <p className="mt-0.5 text-sm text-gray-600">{n.body}</p>}
-              <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
+              {n.body && <p className="mt-0.5 text-sm text-gray-700">{n.body}</p>}
+              <div className="mt-1 flex items-center gap-3 text-xs text-gray-700">
                 <span>{new Date(n.createdAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}</span>
                 {n.link && (
                   <Link href={n.link} onClick={() => handleRead(n.id)} className="text-blue-700 hover:text-blue-800">
@@ -95,7 +95,7 @@ export default function NotificationsClient() {
               {!n.isRead && (
                 <button onClick={() => handleRead(n.id)} disabled={isPending} className="text-xs text-blue-700 hover:text-blue-800">읽음</button>
               )}
-              <button onClick={() => handleDelete(n.id)} disabled={isPending} className="text-xs text-gray-400 hover:text-red-700">삭제</button>
+              <button onClick={() => handleDelete(n.id)} disabled={isPending} className="text-xs text-gray-700 hover:text-red-700">삭제</button>
             </div>
           </div>
         ))}
