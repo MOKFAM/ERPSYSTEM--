@@ -255,7 +255,17 @@ function UserGroup({
       <div className="border-b border-gray-200 bg-slate-800 px-4 py-3 rounded-t-xl">
         <h3 className="text-sm font-bold text-white">{title}</h3>
       </div>
-      <table className="min-w-full divide-y divide-gray-200">
+      <table className="min-w-full divide-y divide-gray-200 table-fixed">
+        <colgroup>
+          <col className="w-[70px]" />
+          <col className="w-[100px]" />
+          <col className="w-[80px]" />
+          <col className="w-[100px]" />
+          <col className="w-[70px]" />
+          <col className="w-[120px]" />
+          <col />
+          <col className="w-[80px]" />
+        </colgroup>
         <thead className="bg-gray-50">
           <tr>
             {headers.map((h) => (
