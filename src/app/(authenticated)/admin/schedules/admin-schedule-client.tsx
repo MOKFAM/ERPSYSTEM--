@@ -50,6 +50,27 @@ export default function AdminScheduleClient({ users }: Props) {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date | null>(null)
+  const [monthSchedules, setMonthSchedules] = useState<Schedule[]>([])
+  const [monthLoading, setMonthLoading] = useState(false)
+
+  const loadMonthSchedules = useCallback(async () => {
+    setMonthLoading(true)
+    try {
+      const startDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`
+      const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate()
+      const endDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
+      const data = await getWeekSchedules(startDate, endDate)
+      setMonthSchedules(data)
+    } catch {
+      setMonthSchedules([])
+    } finally {
+      setMonthLoading(false)
+    }
+  }, [currentYear, currentMonth])
+
+  useEffect(() => {
+    if (view === 'month') loadMonthSchedules()
+  }, [view, loadMonthSchedules])
 
   function handleSelectWeek(weekStart: Date) {
     setSelectedWeekStart(weekStart)
@@ -81,22 +102,23 @@ export default function AdminScheduleClient({ users }: Props) {
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-3">
-        <button onClick={prevMonth} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-          ◀ 이전 달
+      <div className="mb-5 flex items-center gap-3">
+        <button onClick={prevMonth} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
         </button>
-        <span className="text-lg font-bold text-gray-900">
+        <h2 className="text-xl font-bold text-gray-900 tracking-tight">
           {currentYear}년 {currentMonth + 1}월
-        </span>
-        <button onClick={nextMonth} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-          다음 달 ▶
+        </h2>
+        <button onClick={nextMonth} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
         </button>
-        <button onClick={goToday} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-          이번 달
+        <button onClick={goToday} className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          오늘
         </button>
+        {monthLoading && <span className="text-xs text-gray-700">불러오는 중...</span>}
       </div>
 
-      <MonthCalendar year={currentYear} month={currentMonth} onSelectWeek={handleSelectWeek} />
+      <MonthCalendar year={currentYear} month={currentMonth} schedules={monthSchedules} onSelectWeek={handleSelectWeek} />
     </div>
   )
 }
@@ -104,24 +126,29 @@ export default function AdminScheduleClient({ users }: Props) {
 // ──────────────────────────────────────
 // 월간 캘린더
 // ──────────────────────────────────────
-function MonthCalendar({ year, month, onSelectWeek }: { year: number; month: number; onSelectWeek: (d: Date) => void }) {
+function MonthCalendar({ year, month, schedules, onSelectWeek }: {
+  year: number; month: number; schedules: Schedule[]; onSelectWeek: (d: Date) => void
+}) {
   const firstDay = new Date(year, month, 1)
   const lastDay = new Date(year, month + 1, 0)
-  const startDayOfWeek = firstDay.getDay() // 0=일
+  const startDayOfWeek = firstDay.getDay()
   const daysInMonth = lastDay.getDate()
-
   const todayStr = new Date().toISOString().split('T')[0]
 
-  // 달력 주(week) 배열 생성
+  // 날짜별 인원 집계
+  const dayCounts = new Map<string, { ft: number; pt: number }>()
+  for (const s of schedules) {
+    const prev = dayCounts.get(s.date) ?? { ft: 0, pt: 0 }
+    if (s.userEmploymentType === 'part_time') prev.pt++
+    else prev.ft++
+    dayCounts.set(s.date, prev)
+  }
+
   const weeks: (number | null)[][] = []
   let currentWeek: (number | null)[] = Array(startDayOfWeek).fill(null)
-
   for (let day = 1; day <= daysInMonth; day++) {
     currentWeek.push(day)
-    if (currentWeek.length === 7) {
-      weeks.push(currentWeek)
-      currentWeek = []
-    }
+    if (currentWeek.length === 7) { weeks.push(currentWeek); currentWeek = [] }
   }
   if (currentWeek.length > 0) {
     while (currentWeek.length < 7) currentWeek.push(null)
@@ -129,12 +156,9 @@ function MonthCalendar({ year, month, onSelectWeek }: { year: number; month: num
   }
 
   function getWeekMonday(weekIdx: number): Date {
-    // 해당 주의 월요일 찾기
     const week = weeks[weekIdx]
-    // 주에서 첫 번째 유효 날짜 찾기
     const firstDayInWeek = week.find((d) => d !== null)
     if (!firstDayInWeek) return new Date(year, month, 1)
-
     const date = new Date(year, month, firstDayInWeek)
     const dayOfWeek = date.getDay()
     const monday = new Date(date)
@@ -147,10 +171,10 @@ function MonthCalendar({ year, month, onSelectWeek }: { year: number; month: num
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-slate-800">
-            <th className="w-16 border-r border-slate-600 px-2 py-3 text-center text-xs font-semibold text-white">주</th>
+            <th className="w-20 border-r border-slate-600 px-2 py-3 text-center text-xs font-semibold text-slate-300">주차</th>
             {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
               <th key={d} className={`border-r border-slate-600 px-2 py-3 text-center text-xs font-semibold ${
-                i === 0 ? 'text-red-300' : i === 6 ? 'text-blue-300' : 'text-white'
+                i === 0 ? 'text-rose-300' : i === 6 ? 'text-slate-300' : 'text-white'
               }`}>
                 {d}
               </th>
@@ -160,50 +184,62 @@ function MonthCalendar({ year, month, onSelectWeek }: { year: number; month: num
         <tbody>
           {weeks.map((week, weekIdx) => {
             const monday = getWeekMonday(weekIdx)
-            const mondayStr = monday.toISOString().split('T')[0]
-            const sundayDate = new Date(monday)
-            sundayDate.setDate(monday.getDate() + 6)
 
             return (
-              <tr key={weekIdx} className="border-t border-gray-200">
-                {/* 주간 스케줄 이동 버튼 */}
+              <tr key={weekIdx} className="border-t border-gray-100">
                 <td className="border-r border-gray-200 px-1 py-1 text-center">
                   <button
                     onClick={() => onSelectWeek(monday)}
-                    className="w-full rounded-lg bg-blue-600 px-2 py-3 text-xs font-bold text-white transition-colors hover:bg-blue-700"
-                    title={`${formatShort(mondayStr)} ~ ${formatShort(sundayDate.toISOString().split('T')[0])} 주간 스케줄`}
+                    className="w-full rounded-lg bg-slate-800 px-2 py-2.5 text-xs font-bold text-white transition-all hover:bg-slate-700 hover:shadow-md active:scale-95"
                   >
-                    주간
+                    {weekIdx + 1}주차
                   </button>
                 </td>
 
-                {/* 날짜 셀 */}
                 {week.map((day, dayIdx) => {
-                  if (day === null) return <td key={dayIdx} className="border-r border-gray-200 bg-gray-50 px-2 py-3" />
+                  if (day === null) return <td key={dayIdx} className="border-r border-gray-100 bg-gray-50/50 px-2 py-2" />
 
                   const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
                   const isToday = dateStr === todayStr
                   const isSunday = dayIdx === 0
                   const isSaturday = dayIdx === 6
+                  const counts = dayCounts.get(dateStr)
+                  const total = counts ? counts.ft + counts.pt : 0
 
                   return (
                     <td
                       key={dayIdx}
-                      className={`border-r border-gray-200 px-2 py-3 text-center ${
-                        isToday ? 'bg-blue-50' : ''
+                      className={`border-r border-gray-100 px-1.5 py-1.5 align-top transition-colors ${
+                        isToday ? 'bg-amber-50' : ''
                       }`}
                     >
-                      <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
-                        isToday
-                          ? 'bg-blue-600 text-white'
-                          : isSunday
-                            ? 'text-red-700'
-                            : isSaturday
-                              ? 'text-blue-700'
-                              : 'text-gray-900'
-                      }`}>
-                        {day}
-                      </span>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
+                          isToday
+                            ? 'bg-slate-800 text-white'
+                            : isSunday
+                              ? 'text-rose-600'
+                              : isSaturday
+                                ? 'text-slate-700'
+                                : 'text-gray-900'
+                        }`}>
+                          {day}
+                        </span>
+                        {total > 0 ? (
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700" title="직원">
+                              {counts!.ft}
+                            </span>
+                            {counts!.pt > 0 && (
+                              <span className="rounded bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-700" title="알바">
+                                {counts!.pt}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="mt-0.5 h-4" />
+                        )}
+                      </div>
                     </td>
                   )
                 })}
@@ -212,6 +248,17 @@ function MonthCalendar({ year, month, onSelectWeek }: { year: number; month: num
           })}
         </tbody>
       </table>
+      {/* 범례 */}
+      <div className="flex items-center gap-4 border-t border-gray-100 px-4 py-2">
+        <div className="flex items-center gap-1.5">
+          <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700">N</span>
+          <span className="text-xs text-gray-700">직원</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="rounded bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">N</span>
+          <span className="text-xs text-gray-700">알바(PT)</span>
+        </div>
+      </div>
     </div>
   )
 }
@@ -297,24 +344,24 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
     <div>
       {/* 상단 네비게이션 */}
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <button onClick={onBack} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+        <button onClick={onBack} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
           ← 월간 캘린더
         </button>
-        <div className="h-6 w-px bg-gray-300" />
-        <button onClick={() => setWeekOffset(weekOffset - 1)} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-          ◀ 이전 주
+        <div className="h-5 w-px bg-gray-200" />
+        <button onClick={() => setWeekOffset(weekOffset - 1)} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
         </button>
         <span className="text-sm font-bold text-gray-900">
           {formatShort(startDate)} ({formatDay(startDate)}) ~ {formatShort(endDate)} ({formatDay(endDate)})
         </span>
-        <button onClick={() => setWeekOffset(weekOffset + 1)} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-          다음 주 ▶
+        <button onClick={() => setWeekOffset(weekOffset + 1)} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
         </button>
-        <button onClick={() => setWeekOffset(0)} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+        <button onClick={() => setWeekOffset(0)} className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
           이번 주
         </button>
         <div className="ml-auto">
-          <button onClick={handleConfirm} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+          <button onClick={handleConfirm} className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors">
             스케줄 확정
           </button>
         </div>
@@ -337,11 +384,11 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
                     key={date}
                     onClick={() => handleDateClick(date)}
                     className={`min-w-[90px] cursor-pointer border-r border-slate-600 px-2 py-2.5 text-center text-xs font-semibold transition-colors hover:bg-slate-700 ${
-                      isToday(date) ? 'bg-blue-700' : isWeekend(date) ? 'bg-slate-700' : ''
+                      isToday(date) ? 'bg-slate-600' : isWeekend(date) ? 'bg-slate-700' : ''
                     }`}
                   >
                     <div>{formatShort(date)}</div>
-                    <div className={isWeekend(date) ? 'text-red-300' : 'text-slate-300'}>
+                    <div className={isWeekend(date) ? 'text-rose-300' : 'text-slate-300'}>
                       ({formatDay(date)})
                     </div>
                   </th>
@@ -358,7 +405,7 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
                     <div className="text-xs text-gray-700">
                       {positionLabels[user.positionType] ?? ''}
                       {user.employmentType === 'part_time' && (
-                        <span className="ml-1 rounded bg-orange-100 px-1 text-orange-700">PT</span>
+                          <span className="ml-1 rounded bg-orange-100 px-1 text-orange-700">PT</span>
                       )}
                     </div>
                   </td>
@@ -372,10 +419,10 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
                         className={`cursor-pointer border-r border-gray-200 px-1 py-1.5 text-center transition-colors ${
                           schedule
                             ? schedule.isConfirmed
-                              ? 'bg-blue-100 hover:bg-blue-200'
-                              : 'bg-yellow-100 hover:bg-yellow-200'
-                            : 'hover:bg-gray-100'
-                        } ${isToday(date) ? 'ring-2 ring-inset ring-blue-400' : ''}`}
+                              ? 'bg-emerald-50 hover:bg-emerald-100'
+                              : 'bg-amber-50 hover:bg-amber-100'
+                            : 'hover:bg-gray-50'
+                        } ${isToday(date) ? 'ring-2 ring-inset ring-slate-300' : ''}`}
                       >
                         {schedule ? (
                           <div className="text-xs">
@@ -413,10 +460,10 @@ function WeekView({ users, initialDate, onBack }: { users: User[]; initialDate: 
                 ))}
                 <td />
               </tr>
-              <tr className="bg-blue-50">
-                <td className="sticky left-0 z-10 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-900">총인원</td>
+              <tr className="bg-slate-50">
+                <td className="sticky left-0 z-10 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-900">총인원</td>
                 {weekDates.map((date) => (
-                  <td key={date} className="border-r border-gray-200 px-2 py-1.5 text-center text-sm font-bold text-blue-900">
+                  <td key={date} className="border-r border-gray-200 px-2 py-1.5 text-center text-sm font-bold text-slate-900">
                     {getDayCounts(date).total}
                   </td>
                 ))}
@@ -478,16 +525,16 @@ function ScheduleModal({
           <h3 className="mb-4 text-lg font-bold text-gray-900">{dateLabel} 인원 현황</h3>
           <div className="mb-4">
             <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900">
-              <span className="inline-block h-3 w-3 rounded-full bg-blue-500" /> 출근 ({daySchedules.length}명)
+              <span className="inline-block h-3 w-3 rounded-full bg-slate-600" /> 출근 ({daySchedules.length}명)
             </h4>
             {daySchedules.length > 0 ? (
               <div className="space-y-1">
                 {daySchedules.map((s) => (
-                  <div key={s.id} className="flex items-center justify-between rounded-lg bg-blue-50 px-3 py-2">
+                  <div key={s.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                     <div>
                       <span className="font-medium text-gray-900">{s.userName}</span>
                       <span className={`ml-2 rounded px-1.5 py-0.5 text-xs font-medium ${
-                        s.position === 'hall' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                        s.position === 'hall' ? 'bg-slate-100 text-slate-700' : 'bg-purple-100 text-purple-700'
                       }`}>{positionLabels[s.position]}</span>
                     </div>
                     <span className="text-sm text-gray-700">{s.shiftStart.slice(0, 5)} ~ {s.shiftEnd.slice(0, 5)}</span>
@@ -561,7 +608,7 @@ function ScheduleModal({
         <div className="mb-4 flex gap-2">
           <button type="button" onClick={() => applyPreset('morning')} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50">오전 (11~15)</button>
           <button type="button" onClick={() => applyPreset('afternoon')} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50">오후 (17~22)</button>
-          <button type="button" onClick={() => applyPreset('full')} className="flex-1 rounded-lg border border-blue-500 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700 hover:bg-blue-100">종일 (11~22)</button>
+          <button type="button" onClick={() => applyPreset('full')} className="flex-1 rounded-lg border border-slate-400 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100">종일 (11~22)</button>
         </div>
 
         <div className="mb-4 grid grid-cols-2 gap-3">
@@ -578,7 +625,7 @@ function ScheduleModal({
         <div className="mb-4">
           <label className="mb-1 block text-xs font-semibold text-gray-700">포지션</label>
           <div className="flex gap-2">
-            <button type="button" onClick={() => setPosition('hall')} className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium ${position === 'hall' ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`}>홀</button>
+            <button type="button" onClick={() => setPosition('hall')} className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium ${position === 'hall' ? 'bg-slate-800 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`}>홀</button>
             <button type="button" onClick={() => setPosition('kitchen')} className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium ${position === 'kitchen' ? 'bg-purple-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`}>주방</button>
           </div>
         </div>
@@ -589,7 +636,7 @@ function ScheduleModal({
         </div>
 
         <div className="flex gap-2">
-          <button onClick={handleSubmit} disabled={saving} className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
+          <button onClick={handleSubmit} disabled={saving} className="flex-1 rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50">
             {saving ? '저장 중...' : isEdit ? '수정' : '추가'}
           </button>
           {isEdit && (
