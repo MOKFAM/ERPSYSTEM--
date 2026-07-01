@@ -24,7 +24,7 @@ const positionLabels: Record<PositionType, string> = {
 // 직급 정렬 우선순위 (낮을수록 위)
 const jobTitleOrder: Record<string, number> = {
   '점장': 0,
-  '본사소속': 1,
+  '본사파견': 1,
   '실장': 2,
   '부장': 3,
   '사원': 4,
@@ -62,7 +62,8 @@ export default function UsersClient({ users, branches }: Props) {
     return matchQuery && matchType
   })
 
-  const fullTimeUsers = sortUsers(filteredUsers.filter(u => u.employmentType === 'full_time'))
+  const dispatchUsers = sortUsers(filteredUsers.filter(u => u.jobTitle === '본사파견'))
+  const fullTimeUsers = sortUsers(filteredUsers.filter(u => u.employmentType === 'full_time' && u.jobTitle !== '본사파견'))
   const partTimeUsers = sortUsers(filteredUsers.filter(u => u.employmentType === 'part_time'))
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -215,6 +216,14 @@ export default function UsersClient({ users, branches }: Props) {
               onDelete={handleDelete}
             />
           )}
+          {dispatchUsers.length > 0 && (
+            <UserGroup
+              title={`본사파견 (${dispatchUsers.length}명)`}
+              users={dispatchUsers}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
+          )}
           {partTimeUsers.length > 0 && (
             <UserGroup
               title={`PT / 아르바이트 (${partTimeUsers.length}명)`}
@@ -263,7 +272,7 @@ function UserGroup({
                 {user.jobTitle ? (
                   <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
                     user.jobTitle === '점장' ? 'bg-blue-100 text-blue-800' :
-                    user.jobTitle === '본사소속' ? 'bg-purple-100 text-purple-800' :
+                    user.jobTitle === '본사파견' ? 'bg-indigo-100 text-indigo-800' :
                     user.jobTitle === '실장' ? 'bg-emerald-100 text-emerald-800' :
                     user.jobTitle === '부장' ? 'bg-amber-100 text-amber-800' :
                     user.jobTitle === 'PT' ? 'bg-orange-100 text-orange-800' :
